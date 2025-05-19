@@ -20,9 +20,10 @@ class Music(commands.Cog):
             ]
         )
 
-    @commands.Cog.listener()
-    async def on_wavelink_node_ready(self, node: wavelink.Node):
-        print(f"Node {node.identifier} está pronto!")
+@commands.Cog.listener()
+async def on_wavelink_node_ready(self, payload: wavelink.NodeReadyEventPayload):
+    print(f"Node {payload.node.identifier} está pronto!")
+
 
     @commands.command()
     async def play(self, ctx, *, search: str):
