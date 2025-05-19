@@ -5,10 +5,12 @@ import wavelink
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        bot.loop.create_task(self.start_lavalink())
+        bot.loop.create_task(self.start_lavalink())  # Conecta ao Lavalink ao iniciar o cog
+        print("Inicializando cog Music...")
 
     async def start_lavalink(self):
         await self.bot.wait_until_ready()
+        print("Bot está pronto, tentando conectar ao Lavalink...")
 
         await wavelink.Pool.connect(
             client=self.bot,
@@ -20,10 +22,11 @@ class Music(commands.Cog):
             ]
         )
 
-@commands.Cog.listener()
-async def on_wavelink_node_ready(self, payload: wavelink.NodeReadyEventPayload):
-    print(f"Node {payload.node.identifier} está pronto!")
+        print("Conectado ao Lavalink!")
 
+    @commands.Cog.listener()
+    async def on_wavelink_node_ready(self, payload: wavelink.NodeReadyEventPayload):
+        print(f"Node {payload.node.identifier} está pronto!")
 
     @commands.command()
     async def play(self, ctx, *, search: str):
