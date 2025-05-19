@@ -11,16 +11,12 @@ class Music(commands.Cog):
     async def connect_nodes(self):
         await self.bot.wait_until_ready()
         await wavelink.NodePool.create_node(
-    bot=self.bot,
-    host="lavalink.corsariobot.xyz",
-    port=443,
-    password="você não passará",
-    https=True,
-    region="us_central"
-),
-            port=int(os.getenv('LAVALINK_PORT')),
-            password=os.getenv('LAVALINK_PASSWORD'),
-            region='us_central'
+            bot=self.bot,
+            host="lavalink.corsariobot.xyz",
+            port=443,
+            password="youshallnotpass",
+            https=True,
+            region="us_central"
         )
 
     @commands.command()
