@@ -1,22 +1,16 @@
-import os
+
 import discord
 from discord.ext import commands
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-intents = discord.Intents.default()
-intents.message_content = True
-intents.voice_states = True
+class MyBot(commands.Bot):
+    async def setup_hook(self):
+        await self.load_extension("cogs.music")
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+intents = discord.Intents.all()
+bot = MyBot(command_prefix="!", intents=intents)
 
-@bot.event
-async def on_ready():
-    print(f'Bot conectado como {bot.user}')
-
-async def load_extensions():
-    await bot.load_extension('cogs.music')
-
-bot.loop.create_task(load_extensions())
-bot.run(os.getenv('DISCORD_TOKEN'))
+bot.run(os.getenv("DISCORD_TOKEN"))
