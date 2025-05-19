@@ -5,24 +5,32 @@ import wavelink
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        bot.loop.create_task(self.connect_lavalink())
+        bot.loop.create_task(self.start_lavalink())
 
-    async def connect_lavalink(self):
+    async def start_lavalink(self):
         await self.bot.wait_until_ready()
-        node = wavelink.Node(uri='https://lavalink.corsariobot.xyz:443', password='youshallnotpass')
-        await wavelink.NodePool.connect(client=self.bot, nodes=[node])
+
+        await wavelink.Pool.connect(
+            client=self.bot,
+            nodes=[
+                wavelink.Node(
+                    uri="https://lavalink.corsariobot.xyz:443",
+                    password="youshallnotpass"
+                )
+            ]
+        )
+
+    @commands.Cog.listener()
+    async def on_wavelink_node_ready(self, node: wavelink.Node):
+        print(f"Node {node.identifier} está pronto!")
 
     @commands.command()
     async def play(self, ctx, *, search: str):
         if not ctx.author.voice or not ctx.author.voice.channel:
             return await ctx.send("Você precisa estar em um canal de voz.")
-
+        
         channel = ctx.author.voice.channel
-
-        if not ctx.voice_client:
-            vc: wavelink.Player = await channel.connect(cls=wavelink.Player)
-        else:
-            vc: wavelink.Player = ctx.voice_client
+        vc: wavelink.Player = await channel.connect(cls=wavelink.Player) if not ctx.voice_client else ctx.voice_client
 
         track = await wavelink.YouTubeTrack.search(search, return_first=True)
         await vc.play(track)
