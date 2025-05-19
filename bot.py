@@ -1,8 +1,8 @@
-
 import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
+import asyncio
 
 load_dotenv()
 
@@ -13,4 +13,9 @@ class MyBot(commands.Bot):
 intents = discord.Intents.all()
 bot = MyBot(command_prefix="!", intents=intents)
 
-bot.run(os.getenv("DISCORD_TOKEN"))
+async def main():
+    async with bot:
+        await bot.start(os.getenv("DISCORD_TOKEN"))
+
+if __name__ == "__main__":
+    asyncio.run(main())
