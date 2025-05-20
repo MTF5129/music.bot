@@ -6,7 +6,7 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print("DEBUG: Inicializando cog Music...")
-        bot.loop.create_task(self.start_lavalink())  # Garante que Lavalink vai iniciar
+        bot.loop.create_task(self.start_lavalink())  # Conecta ao Lavalink ao iniciar
 
     async def start_lavalink(self):
         await self.bot.wait_until_ready()
@@ -32,9 +32,11 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, search: str):
+        print(f"DEBUG: !play recebido com termo '{search}'")
+
         if not ctx.author.voice or not ctx.author.voice.channel:
             return await ctx.send("Você precisa estar em um canal de voz.")
-        
+
         channel = ctx.author.voice.channel
 
         try:
@@ -42,13 +44,18 @@ class Music(commands.Cog):
         except discord.ClientException:
             vc: wavelink.Player = ctx.voice_client
 
-        track = await wavelink.YouTubeTrack.search(search, return_first=True)
+        try:
+            track = await wavelink.YouTubeTrack.search(search, return_first=True)
+            print(f"DEBUG: Resultado da busca: {track}")
 
-        if not track:
-            return await ctx.send("Nenhuma música encontrada.")
+            if not track:
+                return await ctx.send("Nenhuma música encontrada.")
 
-        await vc.play(track)
-        await ctx.send(f"Tocando: {track.title}")
+            await vc.play(track)
+            await ctx.send(f"Tocando: {track.title}")
+        except Exception as e:
+            print(f"ERRO ao buscar ou tocar música: {e}")
+            await ctx.send("Erro ao tentar tocar a música.")
 
     @commands.command()
     async def stop(self, ctx):
